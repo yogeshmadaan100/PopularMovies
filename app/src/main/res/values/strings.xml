@@ -10,4 +10,12 @@
     <string name="menu_favourites_movies">Favourites</string>
     <string name="title_activity_details">DetailsActivity</string>
     <string name="trailer_source_youtube">Youtube</string>
+    <string name="trailer_share_content1">Hi! I just saw the trailer of</string>
+    <string name="trailer_share_content2">.It is amazing.You can also  wait it at\n</string>
+    <string name="text_retry">Retry</string>
+    <string name="text_no_internet">It seems that your internet is not working.</string>
+    <string name="text_default_error">Some error occurred. Please try again!</string>
+    <string name="text_ratings">Ratings</string>
+    <string name="text_trailers">Trailers</string>
+    <string name="text_reviews">Reviews</string>
 </resources>

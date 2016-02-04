@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
@@ -21,7 +23,9 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -80,6 +84,8 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
     @Bind(R.id.rating_container)    ViewGroup ratingContainer;
     @Bind(R.id.synopsis)            TextView synopsis;
     @Bind(R.id.trailers_header)     TextView trailersHeader;
+    @Bind(R.id.trailers_header_container)
+    LinearLayout trailersHeaderContainer;
     @Bind(R.id.trailers_container)
     HorizontalScrollView trailersScrollView;
     @Bind(R.id.trailers)            ViewGroup trailersView;
@@ -87,6 +93,14 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
     @Bind(R.id.reviews)             ViewGroup reviewsView;
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
+    @Bind(R.id.btn_share)
+    ImageButton btnShare;
+    @OnClick(R.id.btn_share)
+    public void btnShareClicked()
+    {
+        String content = getResources().getString(R.string.trailer_share_content1).concat(movie.getTitle()).concat(getResources().getString(R.string.trailer_share_content2)).concat(TMDbUtils.getUrl(getActivity(),trailersResponse.getTrailers().get(0)));
+        Utils.shareUsingApps(getActivity(),getResources().getString(R.string.app_name),content);
+    }
     @Bind(R.id.fab_fav)
     FloatingActionButton fabFavourite;
     @OnClick(R.id.fab_fav)
@@ -100,7 +114,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
     @BindInt(R.integer.anim_activity_start_delay)   int animActivityStartDelay;
     @BindBool(R.bool.anim_backdrop_animate_alpha)   boolean anibackdropAnimateAlpha;
 
-
+    ViewGroup rootView;
     private Movie movie;
     private TrailersResponse trailersResponse;
     private ReviewsResponse reviewsResponse;
@@ -135,41 +149,14 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movie_details, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movie_details, container, false);
         ButterKnife.bind(this,rootView);
-        if(!twoPane)
-        {
-            backdrop.setVisibility(View.GONE);
-            fabFavourite.setVisibility(View.GONE);
-        }
-        else
+        return rootView;
+    }
 
-        fabFavourite.setImageResource(Utils.isFavourite(getActivity(),movie)?R.drawable.ic_favorite_white_24dp:R.drawable.ic_favorite_border_white_24dp);
-
-        enterAnimationViews = Arrays.asList(
-                title, releaseDate, ratingContainer, synopsis,
-                trailersHeader, trailersView, reviewsHeader, reviewsView);
-        exitAnimationViews = new ArrayList<>();
-        exitAnimationViews.add(backdrop);
-        exitAnimationViews.add(poster);
-        exitAnimationViews.addAll(enterAnimationViews);
-
-        // credits for onPreDraw technique: http://frogermcs.github.io/Instagram-with-Material-Design-concept-part-2-Comments-transition/
-        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-                if (scrollViewLayout.getHeight() < nestedScrollView.getHeight()) {
-                    ViewGroup.LayoutParams lp = scrollViewLayout.getLayoutParams();
-                    lp.height = nestedScrollView.getHeight();
-                    scrollViewLayout.setLayoutParams(lp);
-                }
-                updateMovieDetails();
-                startEnterAnimation(animActivityStartDelay);
-                return true;
-            }
-        });
-        progressBar.setVisibility(View.VISIBLE);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         if(savedInstanceState!=null)
         {
             Log.d("savedInstance","fetching values");
@@ -183,23 +170,9 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
             Log.d("review request",""+isReviewRequestComplete);
 
         }
-        if(isTrailerRequestComplete)
-            handleTrailers(trailersResponse);
-        else
-            fetchTrailers();
-
-        if(isReviewRequestComplete)
-            handleReviews(reviewsResponse);
-        else
-            fetchReviews();
-
-        if(isReviewRequestComplete&&isTrailerRequestComplete)
-            progressBar.setVisibility(View.GONE);
-        else
-            progressBar.setVisibility(View.VISIBLE);
-
-        return rootView;
+        initViews();
     }
+
     public void fetchTrailers()
     {
         _subscriptions.add(//
@@ -213,6 +186,10 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
                             @Override
                             public void onError(Throwable e) {
+                                if(!Utils.isConnectedToInternet(getActivity()))
+                                    showSnackbar(getResources().getString(R.string.text_no_internet));
+                                else
+                                    showSnackbar(getResources().getString(R.string.text_default_error));
                             }
 
                             @Override
@@ -238,6 +215,56 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
         outState.putBoolean(ARG_TWO_PANE,twoPane);
     }
 
+    public void initViews()
+    {
+        if(!twoPane)
+        {
+            backdrop.setVisibility(View.GONE);
+            fabFavourite.setVisibility(View.GONE);
+        }
+        else
+
+            fabFavourite.setImageResource(Utils.isFavourite(getActivity(),movie)?R.drawable.ic_favorite_white_24dp:R.drawable.ic_favorite_border_white_24dp);
+
+        enterAnimationViews = Arrays.asList(
+                title, releaseDate, ratingContainer, synopsis,
+                trailersHeaderContainer, trailersView, reviewsHeader, reviewsView);
+        exitAnimationViews = new ArrayList<>();
+        exitAnimationViews.add(backdrop);
+        exitAnimationViews.add(poster);
+        exitAnimationViews.addAll(enterAnimationViews);
+
+        // credits for onPreDraw technique: http://frogermcs.github.io/Instagram-with-Material-Design-concept-part-2-Comments-transition/
+        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                if (scrollViewLayout.getHeight() < nestedScrollView.getHeight()) {
+                    ViewGroup.LayoutParams lp = scrollViewLayout.getLayoutParams();
+                    lp.height = nestedScrollView.getHeight();
+                    scrollViewLayout.setLayoutParams(lp);
+                }
+                updateMovieDetails();
+                startEnterAnimation(animActivityStartDelay);
+                return true;
+            }
+        });
+        if(isTrailerRequestComplete)
+            handleTrailers(trailersResponse);
+        else
+            fetchTrailers();
+
+        if(isReviewRequestComplete)
+            handleReviews(reviewsResponse);
+        else
+            fetchReviews();
+
+        if(isReviewRequestComplete&&isTrailerRequestComplete)
+            progressBar.setVisibility(View.GONE);
+        else
+            progressBar.setVisibility(View.VISIBLE);
+
+    }
     public void fetchReviews()
     {
         _subscriptions.add(//
@@ -251,6 +278,10 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
                             @Override
                             public void onError(Throwable e) {
+                                if(!Utils.isConnectedToInternet(getActivity()))
+                                    showSnackbar(getResources().getString(R.string.text_no_internet));
+                                else
+                                    showSnackbar(getResources().getString(R.string.text_default_error));
                             }
 
                             @Override
@@ -272,6 +303,9 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
     public void setMovie(Movie movie) {
         this.movie = movie;
+        backdrop.setImageResource(R.drawable.movie_placeholder);
+        poster.setImageResource(R.drawable.movie_placeholder);
+        initViews();
     }
 
     private void updateMovieDetails() {
@@ -287,7 +321,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
             int backdropHeight = getResources().getDimensionPixelSize(R.dimen.details_backdrop_height);
             Glide.with(getActivity())
                     .load(TMDbUtils.buildBackdropUrl(movie.getBackdropPath(), backdropWidth))
-                    .asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
+                    .asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.movie_placeholder).error(R.drawable.movie_placeholder).
                     into(new SimpleTarget<Bitmap>(backdropWidth, backdropHeight) {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
@@ -300,7 +334,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
         int posterHeight = getResources().getDimensionPixelSize(R.dimen.details_poster_height);
         Glide.with(getActivity())
                 .load(TMDbUtils.buildPosterUrl(movie.getPosterPath(), posterWidth))
-                .asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
+                .asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.movie_placeholder).error(R.drawable.movie_placeholder).
                 into(new SimpleTarget<Bitmap>(posterWidth,posterHeight) {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
@@ -331,7 +365,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
             thumbView.setOnClickListener(this);
             Glide.with(getActivity())
                     .load(TMDbUtils.getThumbnailUrl(getActivity(),trailer))
-                    .asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
+                    .asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.movie_placeholder).error(R.drawable.movie_placeholder).
                     into(new SimpleTarget<Bitmap>(posterWidth,posterHeight) {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
@@ -432,16 +466,6 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
 
     }
-    private void expandTextView(TextView tv){
-        ObjectAnimator animation = ObjectAnimator.ofInt(tv, "maxLines", tv.getLineCount());
-        animation.setDuration(200).start();
-    }
-
-    private void collapseTextView(TextView tv, int numLines){
-        Log.e("collapsing","textview");
-        ObjectAnimator animation = ObjectAnimator.ofInt(tv, "maxLines", numLines);
-        animation.setDuration(200).start();
-    }
 
 
     private static abstract class AnimatorEndWithoutCancelListener implements Animator.AnimatorListener {
@@ -499,7 +523,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
         if (trailersResponse != null && trailersResponse.getTrailers().size()>0) {
 //                                    mResponse = moviesResponse;
             Log.d("trailer size",""+trailersResponse.getTrailers().size());
-            trailersHeader.setVisibility(View.VISIBLE);
+            trailersHeaderContainer.setVisibility(View.VISIBLE);
             trailersScrollView.setVisibility(View.VISIBLE);
             addTrailers(trailersResponse.getTrailers());
             setTrailersResponse(trailersResponse);
@@ -515,5 +539,18 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
             addReviews(reviewsResponse.getReviews());
             setReviewsResponse(reviewsResponse);
         }
+    }
+    public void showSnackbar(String text)
+    {
+        Snackbar.make(rootView,text, Snackbar.LENGTH_LONG)
+                .setAction(getResources().getString(R.string.text_retry), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(trailersResponse==null)
+                            fetchTrailers();
+                        if(reviewsResponse==null)
+                            fetchReviews();
+                    }
+                }).show();
     }
 }

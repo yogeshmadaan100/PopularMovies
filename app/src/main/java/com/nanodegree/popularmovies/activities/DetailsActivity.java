@@ -73,7 +73,7 @@ public class DetailsActivity extends BaseActivity {
                 int gridWidth = viewGroup.getWidth();
                 actualBackdropViewWidth = gridWidth ;
                 Log.e("actualbackgrop width",""+gridWidth);
-                Glide.with(getApplicationContext()).load(TMDbUtils.buildBackdropUrl(movie.getBackdropPath(), actualBackdropViewWidth)).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
+                Glide.with(getApplicationContext()).load(TMDbUtils.buildBackdropUrl(movie.getBackdropPath(), actualBackdropViewWidth)).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.movie_placeholder).error(R.drawable.movie_placeholder).
                         into(new SimpleTarget<Bitmap>(actualBackdropViewWidth,backdrop.getHeight()) {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {

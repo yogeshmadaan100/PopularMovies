@@ -4,6 +4,7 @@ package com.nanodegree.popularmovies.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ProgressBar;
 
 import com.nanodegree.popularmovies.Constants;
 import com.nanodegree.popularmovies.R;
@@ -24,6 +26,7 @@ import com.nanodegree.popularmovies.models.Movie;
 import com.nanodegree.popularmovies.models.MoviesResponse;
 import com.nanodegree.popularmovies.models.SortCriteria;
 import com.nanodegree.popularmovies.services.MovieService;
+import com.nanodegree.popularmovies.utils.EndlessRecyclerOnScrollListener;
 import com.nanodegree.popularmovies.utils.RxUtils;
 import com.nanodegree.popularmovies.utils.Utils;
 
@@ -46,6 +49,8 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
     SwipeRefreshLayout swipeRefreshLayout;
     @BindDimen(R.dimen.minimum_column_width)
     int minimumColumnWidth,optimalColumnCount;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
     private static final String TAG = MoviesFragment.class.getCanonicalName();
     public static final SortCriteria defaultSortCriteria = SortCriteria.POPULARITY;
     public static  SortCriteria currentSortCriteria = defaultSortCriteria;
@@ -57,7 +62,7 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
     private List<Movie> movieList;
     GridLayoutManager gridLayoutManager;
     private MoviesResponse mResponse;
-
+    ViewGroup rootView;
     public MoviesFragment() {
         // Required empty public constructor
     }
@@ -78,7 +83,7 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movies, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movies, container, false);
         ButterKnife.bind(this, rootView);
         final Activity activity = getActivity();
         final MovieAdapter.MovieClickInterface movieClickInterface = this;
@@ -96,7 +101,7 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
                     if(savedInstanceState.getParcelable(KEY_MOVIES)!=null)
                     {
                         mResponse = savedInstanceState.getParcelable(KEY_MOVIES);
-                       refreshData(mResponse);
+                       refreshData(mResponse,true);
                     }
                     if(savedInstanceState.getSerializable(KEY_SORT_ORDER)!=null)
                         currentSortCriteria = (SortCriteria)savedInstanceState.getSerializable(KEY_SORT_ORDER);
@@ -161,7 +166,19 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
         gridLayoutManager = new GridLayoutManager(getActivity(), optimalColumnCount, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(movieAdapter);
-
+        recyclerView.setOnScrollListener(new EndlessRecyclerOnScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                // do something...
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.VISIBLE);
+                    }
+                });
+                fetchMoreData();
+            }
+        });
 
     }
 
@@ -203,11 +220,41 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
 
                             @Override
                             public void onError(Throwable e) {
+                                if(!Utils.isConnectedToInternet(getActivity()))
+                                showSnackbar(getResources().getString(R.string.text_no_internet));
+                                else
+                                    showSnackbar(getResources().getString(R.string.text_default_error));
                             }
 
                             @Override
                             public void onNext(MoviesResponse moviesResponse) {
-                               refreshData(moviesResponse);
+                               refreshData(moviesResponse,true);
+                            }
+                        }));
+    }
+    public void fetchMoreData()
+    {
+        _subscriptions.add(//
+                new MovieService(getActivity()).getMovieApi().fetchMovies(currentSortCriteria.toString(), Constants.API_KEY,mResponse.getPage()+1)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<MoviesResponse>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                if(!Utils.isConnectedToInternet(getActivity()))
+                                    showSnackbar(getResources().getString(R.string.text_no_internet));
+                                else
+                                    showSnackbar(getResources().getString(R.string.text_default_error));
+                            }
+
+                            @Override
+                            public void onNext(MoviesResponse moviesResponse) {
+                                refreshData(moviesResponse,false);
+                                progressBar.setVisibility(View.GONE);
                             }
                         }));
     }
@@ -226,15 +273,25 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public void refreshData(MoviesResponse moviesResponse)
+    public void refreshData(MoviesResponse moviesResponse,boolean clearData)
     {
         if (moviesResponse != null && moviesResponse.getMovies().size() > 0) {
-            mResponse = moviesResponse;
-            movieList.clear();
+            if (clearData)
+            {
+                mResponse = moviesResponse;
+                movieList.clear();
+            }
+            else
+            {
+                mResponse.setPage(moviesResponse.getPage());
+                mResponse.getMovies().addAll(moviesResponse.getMovies());
+            }
             movieList.addAll(moviesResponse.getMovies());
             movieAdapter.notifyDataSetChanged();
             stopRefreshing();
-            onMovieClick(null,mResponse.getMovies().get(0),true);
+            if(clearData)
+                onMovieClick(null,mResponse.getMovies().get(0),true);
+
 
         }
     }
@@ -244,7 +301,17 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
         movieList.addAll(movies);
         movieAdapter.notifyDataSetChanged();
         stopRefreshing();
-        onMovieClick(null,mResponse.getMovies().get(0),true);
+        onMovieClick(null,movies.get(0),true);
 
+    }
+    public void showSnackbar(String text)
+    {
+        Snackbar.make(rootView,text, Snackbar.LENGTH_LONG)
+                .setAction(getResources().getString(R.string.text_retry), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        refreshContent();
+                    }
+                }).show();
     }
 }

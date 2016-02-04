@@ -16,6 +16,9 @@ public interface MovieApi {
     @GET("/3/discover/movie")
     Observable<MoviesResponse> fetchMovies(@Query("sort_by") String sortOrder, @Query("api_key") String apiKey);
 
+    @GET("/3/discover/movie")
+    Observable<MoviesResponse> fetchMovies(@Query("sort_by") String sortOrder, @Query("api_key") String apiKey,@Query("page") int page);
+
     @GET("/3/movie/{id}/videos")
     Observable<TrailersResponse> fetchTrailers(@Path("id") int id, @Query("api_key") String apiKey);
 

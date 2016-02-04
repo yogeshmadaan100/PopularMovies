@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:background="@drawable/movie_placeholder"/>
+        android:background="@drawable/movie_placeholder"
+        android:transitionName="poster"/>
 
 </LinearLayout>

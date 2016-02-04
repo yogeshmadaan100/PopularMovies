@@ -11,7 +11,9 @@
     <dimen name="margin_default">8dp</dimen>
     <dimen name="margin_large">16dp</dimen>
     <dimen name="margin_for_fab">88dp</dimen> <!-- fab_size + 2*margin_large -->
-
+    <dimen name="margin_negative">-30dp</dimen>
+    <dimen name="expandedTitleMarginStart">48dp</dimen>
+    <dimen name="expandedTitleMarginEnd">64dp</dimen>
     <!-- specific view dimensions and spacing -->
     <dimen name="fab_size">56dp</dimen>
     <dimen name="desired_column_width">150dp</dimen>
@@ -25,4 +27,6 @@
     <integer name="anim_short_duration">200</integer>
     <integer name="anim_stagger_delay">75</integer>
     <integer name="anim_activity_start_delay">300</integer>
+    <item name="line_spacing" format="float" type="dimen">1.15</item>
+
 </resources>

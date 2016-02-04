@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
@@ -19,8 +17,8 @@
             android:id="@+id/backdrop"
             android:layout_width="match_parent"
             android:layout_height="@dimen/details_backdrop_height"
-            tools:background="#ddd"
             android:visibility="visible"
+            android:scaleType="centerCrop"
             />
         <View
             android:layout_width="match_parent"
@@ -35,10 +33,10 @@
             android:layout_height="@dimen/details_poster_height"
             android:layout_marginLeft="@dimen/margin_large"
             android:layout_marginStart="@dimen/margin_large"
-            android:layout_marginTop="-30dp"
+            android:layout_marginTop="@dimen/margin_negative"
             android:layout_below="@+id/fake_view"
             tools:background="@drawable/movie_placeholder"
-
+            android:transitionName="poster"
             />
 
         <TextView
@@ -69,7 +67,6 @@
             android:layout_marginLeft="@dimen/margin_large"
             android:layout_marginRight="@dimen/margin_default"
             android:layout_marginStart="@dimen/margin_large"
-            android:layout_marginTop="2dp"
             android:layout_toEndOf="@id/poster"
             android:layout_toRightOf="@id/poster"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -96,14 +93,13 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2"
                 android:textColor="?android:attr/textColorPrimary"
-                tools:text="7.3"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_default"
-                android:text="Ratings"
+                android:text="@string/text_ratings"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="?android:attr/textColorSecondary"
                 />
@@ -121,32 +117,45 @@
             android:layout_marginRight="@dimen/margin_large"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
-            android:lineSpacingMultiplier="1.15"
+            android:lineSpacingMultiplier="@dimen/line_spacing"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            tools:text="With the nation of Panem in a full scale war, Katniss confronts President Snow in the final showdown. Teamed with a group of her closest friends – including Gale, Finnick, and Peeta – Katniss goes off on a mission with the unit from District 13 as they risk their lives to stage an assassination attempt on President Snow who has become increasingly obsessed with destroying her. The mortal traps, enemies, and moral choices that await Katniss will challenge her more than any arena she faced in The Hunger Games."
             />
-
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/synopsis"
+            android:orientation="horizontal"
+            android:id="@+id/trailers_header_container"
+            android:visibility="gone"
+            >
         <TextView
             android:id="@+id/trailers_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/synopsis"
             android:layout_marginEnd="@dimen/margin_large"
             android:layout_marginLeft="@dimen/margin_large"
             android:layout_marginRight="@dimen/margin_large"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_default"
             android:paddingTop="@dimen/margin_large"
-            android:text="Trailers"
+            android:text="@string/text_trailers"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:visibility="gone"
+            android:gravity="center|center_vertical"
             />
-
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_share"
+            android:id="@+id/btn_share"
+            android:paddingTop="@dimen/margin_large"
+            android:layout_gravity="center"/>
+        </LinearLayout>
         <HorizontalScrollView
             android:id="@+id/trailers_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/trailers_header"
+            android:layout_below="@id/trailers_header_container"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
             android:layout_marginLeft="@dimen/margin_large"
@@ -178,7 +187,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_default"
             android:paddingTop="@dimen/margin_large"
-            android:text="Reviews"
+            android:text="@string/text_reviews"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:visibility="gone"
             />
@@ -210,7 +219,7 @@
             android:id="@+id/fab_fav"
             android:layout_below="@+id/fake_view"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="-30dp"/>
+            android:layout_marginTop="@dimen/margin_negative"/>
     </RelativeLayout>
 
 </android.support.v4.widget.NestedScrollView>

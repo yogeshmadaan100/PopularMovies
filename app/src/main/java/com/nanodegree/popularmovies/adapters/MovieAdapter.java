@@ -47,7 +47,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(final MovieViewHolder holder, final int position) {
-        Glide.with(context).load(TMDbUtils.buildPosterUrl(movies.get(position).getPosterPath(), actualPosterViewWidth)).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
+        Glide.with(context).load(TMDbUtils.buildPosterUrl(movies.get(position).getPosterPath(), actualPosterViewWidth)).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.movie_placeholder).error(R.drawable.movie_placeholder).
         into(new SimpleTarget<Bitmap>(actualPosterViewWidth,(int)(actualPosterViewWidth/TMDB_POSTER_SIZE_RATIO)) {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
