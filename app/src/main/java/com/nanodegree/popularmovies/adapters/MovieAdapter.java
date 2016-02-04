@@ -3,7 +3,6 @@ package com.nanodegree.popularmovies.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.nanodegree.popularmovies.R;
 import com.nanodegree.popularmovies.models.Movie;
+import com.nanodegree.popularmovies.utils.TMDbUtils;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     List<Movie> movies = null;
     int actualPosterViewWidth =0;
     private MovieClickInterface movieClickInterface;
-    private static final double TMDB_POSTER_SIZE_RATIO = 185.0 / 277.0;
+    private static final double TMDB_POSTER_SIZE_RATIO = 2/3;
 
     public MovieAdapter(Context context, List<Movie> movies, int actualPosterViewWidth, MovieClickInterface movieClickInterface)
     {
@@ -47,18 +47,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(final MovieViewHolder holder, final int position) {
-        Glide.with(context).load("http://image.tmdb.org/t/p/w185"+movies.get(position).getPosterPath()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
+        Glide.with(context).load(TMDbUtils.buildPosterUrl(movies.get(position).getPosterPath(), actualPosterViewWidth)).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).
         into(new SimpleTarget<Bitmap>(actualPosterViewWidth,(int)(actualPosterViewWidth/TMDB_POSTER_SIZE_RATIO)) {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                Log.e("image","loaded");
                 holder.imageView.setImageBitmap(resource); // Possibly runOnUiThread()
             }
         });
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                movieClickInterface.onMovieClick(position);
+                movieClickInterface.onMovieClick(holder.itemView,movies.get(position),false);
             }
         });
     }
@@ -82,7 +81,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     public interface MovieClickInterface
     {
-        void onMovieClick(int position);
+        void onMovieClick(View itemView,Movie movie,boolean isDefaultSelection);
     }
 
 

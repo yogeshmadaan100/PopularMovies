@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="base_url_tmdb">http://image.tmdb.org/t/p/</string>
-
+    <bool name="anim_backdrop_animate_alpha">true</bool>
 </resources>

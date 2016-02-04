@@ -1,6 +1,5 @@
 package com.nanodegree.popularmovies.models;
 
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -15,7 +14,7 @@ import java.util.List;
  */
 public class Movie implements Parcelable{
 
-    public static final String KEY_FAVORITE = "favorate";
+    public static final String KEY_FAVORITE = "favorite";
     public static final String KEY_ID = "id";
     public static final String KEY_OVERVIEW = "overview";
     public static final String KEY_RELEASEDATE = "releaseDate";
@@ -66,6 +65,37 @@ public class Movie implements Parcelable{
     @SerializedName("vote_average")
     @Expose
     private double voteAverage;
+
+    public Movie(Parcel in) {
+        posterPath = in.readString();
+        adult = in.readByte() != 0;
+        overview = in.readString();
+        releaseDate = in.readString();
+        id = in.readInt();
+        originalTitle = in.readString();
+        originalLanguage = in.readString();
+        title = in.readString();
+        backdropPath = in.readString();
+        popularity = in.readDouble();
+        voteCount = in.readInt();
+        video = in.readByte() != 0;
+        voteAverage = in.readDouble();
+    }
+    public Movie()
+    {
+
+    }
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     /**
      *
@@ -327,56 +357,18 @@ public class Movie implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(KEY_ID, id);
-        bundle.putString(KEY_OVERVIEW, overview);
-        bundle.putString(KEY_RELEASEDATE, releaseDate);
-        bundle.putString(KEY_POSTERPATH, posterPath);
-        bundle.putString(KEY_TITLE, title);
-        bundle.putDouble(KEY_VOTEAVERAGE, voteAverage);
-        bundle.putInt(KEY_VOTECOUNT, voteCount);
-        dest.writeBundle(bundle);
+        dest.writeString(posterPath);
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeInt(id);
+        dest.writeString(originalTitle);
+        dest.writeString(originalLanguage);
+        dest.writeString(title);
+        dest.writeString(backdropPath);
+        dest.writeDouble(popularity);
+        dest.writeInt(voteCount);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeDouble(voteAverage);
     }
-
-    /**
-     *
-     * Called from the constructor to create this
-     * object from a parcel.
-     *
-     * @param in parcel from which to re-create object
-     */
-    private void readFromParcel(Parcel in) {
-        Bundle bundle = new Bundle();
-        bundle.getInt(KEY_VOTECOUNT);
-        bundle.getDouble(KEY_VOTEAVERAGE);
-        bundle.getString(KEY_TITLE);
-        bundle.getString(KEY_OVERVIEW);
-        bundle.getString(KEY_POSTERPATH);
-        bundle.getString(KEY_RELEASEDATE);
-        bundle.getInt(KEY_ID);
-
-        in.readBundle();
-    }
-
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel source) {
-            Movie resultsModel = new Movie();
-            resultsModel.id = source.readInt();
-            resultsModel.overview = source.readString();
-            resultsModel.releaseDate = source.readString();
-            resultsModel.voteAverage = source.readDouble();
-            resultsModel.posterPath = source.readString();
-            resultsModel.title = source.readString();
-            resultsModel.voteCount = source.readInt();
-
-            return resultsModel;
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
-
 }

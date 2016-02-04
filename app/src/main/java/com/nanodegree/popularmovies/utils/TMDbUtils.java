@@ -1,9 +1,13 @@
 package com.nanodegree.popularmovies.utils;
 
+import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.nanodegree.popularmovies.BuildConfig;
+import com.nanodegree.popularmovies.R;
+import com.nanodegree.popularmovies.models.Trailer;
 
 /**
  * Created by yogeshmadaan on 03/02/16.
@@ -56,7 +60,7 @@ public class TMDbUtils {
 
     private static <T extends TMDbImageWidth> String buildImageUrl(String imagePath, T tmdbImageWidth) {
         if (BuildConfig.DEBUG) {
-            Log.v("Picasso", "Loading image of width " + tmdbImageWidth.getMaxWidth() + "px");
+//            Log.v("Picasso", "Loading image of width " + tmdbImageWidth.getMaxWidth() + "px");
         }
         String relativePath = tmdbImageWidth.getWidthString() + "/" + imagePath;
         return Uri.withAppendedPath(TMDB_IMAGE_BASE_URI, relativePath).toString();
@@ -82,6 +86,22 @@ public class TMDbUtils {
             }
         }
         return TMDbBackdropWidth.ORIGINAL;
+    }
+    public static String getUrl(Context context,@NonNull Trailer trailer) {
+        if (trailer.getSite().equalsIgnoreCase(context.getResources().getString(R.string.trailer_source_youtube))) {
+            return String.format("http://www.youtube.com/watch?v=%1$s", trailer.getKey());
+        } else {
+            throw new UnsupportedOperationException("Only YouTube is supported!");
+        }
+    }
+
+    public static String getThumbnailUrl(Context context,@NonNull Trailer trailer) {
+        if (trailer.getSite().equalsIgnoreCase(context.getResources().getString(R.string.trailer_source_youtube))) {
+            Log.e("thumnail url is",""+String.format("http://img.youtube.com/vi/%1$s/0.jpg", trailer.getId()));
+            return String.format("http://img.youtube.com/vi/%1$s/0.jpg", trailer.getKey());
+        } else {
+            throw new UnsupportedOperationException("Only YouTube is supported!");
+        }
     }
 
 }

@@ -5,4 +5,24 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="minimum_column_width">150dp</dimen>
+    <dimen name="details_backdrop_height">250dp</dimen>
+    <dimen name="margin_fab">16dp</dimen>
+    <dimen name="margin_inline">4dp</dimen>
+    <dimen name="margin_default">8dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="margin_for_fab">88dp</dimen> <!-- fab_size + 2*margin_large -->
+
+    <!-- specific view dimensions and spacing -->
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="desired_column_width">150dp</dimen>
+    <dimen name="details_poster_width">100dp</dimen>
+    <dimen name="details_poster_height">150dp</dimen>
+    <dimen name="details_poster_margin_top">172dp</dimen>
+    <dimen name="video_height">180dp</dimen>
+    <dimen name="video_width">240dp</dimen> <!-- height * aspect_ratio -->
+
+    <!-- animation -->
+    <integer name="anim_short_duration">200</integer>
+    <integer name="anim_stagger_delay">75</integer>
+    <integer name="anim_activity_start_delay">300</integer>
 </resources>

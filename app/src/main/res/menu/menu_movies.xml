@@ -2,8 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.MoviesActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+    <item android:id="@+id/action_popular_movies"
+        android:title="@string/menu_popular_movies"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_toprated_movies"
+        android:orderInCategory="100"
+        android:title="@string/menu_toprated_movies"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_favourites_movies"
+        android:orderInCategory="100"
+        android:title="@string/menu_favourites_movies" />
 </menu>
