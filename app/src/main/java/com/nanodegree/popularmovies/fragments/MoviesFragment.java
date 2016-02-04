@@ -306,6 +306,7 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
     }
     public void showSnackbar(String text)
     {
+        stopRefreshing();
         Snackbar.make(rootView,text, Snackbar.LENGTH_LONG)
                 .setAction(getResources().getString(R.string.text_retry), new View.OnClickListener() {
                     @Override

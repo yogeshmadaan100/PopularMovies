@@ -542,6 +542,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
     }
     public void showSnackbar(String text)
     {
+        progressBar.setVisibility(View.GONE);
         Snackbar.make(rootView,text, Snackbar.LENGTH_LONG)
                 .setAction(getResources().getString(R.string.text_retry), new View.OnClickListener() {
                     @Override
