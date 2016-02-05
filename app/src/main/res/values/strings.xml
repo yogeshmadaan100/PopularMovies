@@ -18,4 +18,5 @@
     <string name="text_ratings">Ratings</string>
     <string name="text_trailers">Trailers</string>
     <string name="text_reviews">Reviews</string>
+    <string name="text_no_favourites">Sorry! You have no favourites saved.</string>
 </resources>

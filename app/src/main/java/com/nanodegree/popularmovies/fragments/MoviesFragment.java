@@ -289,7 +289,7 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
             movieList.addAll(moviesResponse.getMovies());
             movieAdapter.notifyDataSetChanged();
             stopRefreshing();
-            if(clearData)
+            if(clearData && mResponse.getMovies().size()>0)
                 onMovieClick(null,mResponse.getMovies().get(0),true);
 
 
@@ -301,7 +301,8 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
         movieList.addAll(movies);
         movieAdapter.notifyDataSetChanged();
         stopRefreshing();
-        onMovieClick(null,movies.get(0),true);
+        if(movieList.size()>0)
+            onMovieClick(null,movies.get(0),true);
 
     }
     public void showSnackbar(String text)

@@ -19,7 +19,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.nanodegree.popularmovies.R;
 import com.nanodegree.popularmovies.models.Movie;
 import com.nanodegree.popularmovies.provider.MoviesProvider;
 import com.nanodegree.popularmovies.provider.MoviesSQLiteHelper;
@@ -94,6 +96,8 @@ public class Utils {
                 movies.add(movie1);
             }
         }
+        if(movies.size()==0)
+            Toast.makeText(context,context.getResources().getString(R.string.text_no_favourites),Toast.LENGTH_LONG).show();
         return movies;
     }
     public static void makeTextViewResizable(final TextView tv, final int maxLine, final String expandText, final boolean viewMore) {
