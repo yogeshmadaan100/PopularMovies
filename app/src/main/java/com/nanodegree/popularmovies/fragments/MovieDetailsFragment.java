@@ -170,6 +170,11 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
             Log.d("review request",""+isReviewRequestComplete);
 
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         initViews();
     }
 
