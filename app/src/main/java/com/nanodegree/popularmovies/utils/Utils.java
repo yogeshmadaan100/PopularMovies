@@ -40,20 +40,23 @@ public class Utils {
 
     public static int toggleFavourite(Context context, Movie movie)
     {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MoviesSQLiteHelper.ID, movie.getId());
-        contentValues.put(MoviesSQLiteHelper.TITLE, movie.getTitle());
-        contentValues.put(MoviesSQLiteHelper.RELEASE_DATE, movie.getReleaseDate());
-        contentValues.put(MoviesSQLiteHelper.POSTER_PATH, movie.getPosterPath());
-        contentValues.put(MoviesSQLiteHelper.BACKDROP_PATH, movie.getBackdropPath());
-        contentValues.put(MoviesSQLiteHelper.VOTE_AVERAGE, Double.toString(movie.getVoteAverage()));
-        contentValues.put(MoviesSQLiteHelper.OVERVIEW, movie.getOverview());
+
         Uri.Builder uriBuilder = MoviesProvider.CONTENT_URI.buildUpon();
 
         if(isFavourite(context, movie))
             context.getContentResolver().delete(uriBuilder.build(),String.valueOf(movie.getId()),null);
         else
+        {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MoviesSQLiteHelper.ID, movie.getId());
+            contentValues.put(MoviesSQLiteHelper.TITLE, movie.getTitle());
+            contentValues.put(MoviesSQLiteHelper.RELEASE_DATE, movie.getReleaseDate());
+            contentValues.put(MoviesSQLiteHelper.POSTER_PATH, movie.getPosterPath());
+            contentValues.put(MoviesSQLiteHelper.BACKDROP_PATH, movie.getBackdropPath());
+            contentValues.put(MoviesSQLiteHelper.VOTE_AVERAGE, Double.toString(movie.getVoteAverage()));
+            contentValues.put(MoviesSQLiteHelper.OVERVIEW, movie.getOverview());
             context.getContentResolver().insert(MoviesProvider.CONTENT_URI, contentValues);
+        }
         return 0;
     }
 
