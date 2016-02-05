@@ -60,16 +60,13 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
             return;
         }
         mSelectedMovie = movie;
-        if (mDetailsFragment == null) {
             mDetailsFragment = MovieDetailsFragment.newInstance(movie, true);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.details_fragment_container, mDetailsFragment,
                             MovieDetailsFragment.class.getSimpleName())
                     .commit();
-        } else {
-            mDetailsFragment.setMovie(movie);
-        }
+//
     }
 
     @Override
