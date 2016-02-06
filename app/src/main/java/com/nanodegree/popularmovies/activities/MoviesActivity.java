@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.nanodegree.popularmovies.R;
 import com.nanodegree.popularmovies.adapters.MovieAdapter;
@@ -45,6 +44,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
                 showMovieDetails(selectedMovie);
             }
         }
+        hideDetailsFragment();
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -60,6 +60,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
             return;
         }
         mSelectedMovie = movie;
+        showDetailsFragment();
             mDetailsFragment = MovieDetailsFragment.newInstance(movie, true);
             getSupportFragmentManager()
                     .beginTransaction()
@@ -89,4 +90,16 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
         }
 
     }
+
+    public void showDetailsFragment()
+    {
+        if(findViewById(R.id.details_fragment_container) != null && findViewById(R.id.details_fragment_container).getVisibility()==View.GONE)
+            findViewById(R.id.details_fragment_container).setVisibility(View.VISIBLE);
+    }
+    public void hideDetailsFragment()
+    {
+        if(findViewById(R.id.details_fragment_container) != null && findViewById(R.id.details_fragment_container).getVisibility()==View.VISIBLE)
+            findViewById(R.id.details_fragment_container).setVisibility(View.GONE);
+    }
+
 }

@@ -31,7 +31,6 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:baselineAligned="false"
-    android:weightSum="5"
     app:layout_scrollFlags="scroll|enterAlways"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
@@ -53,6 +52,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
+        android:visibility="visible"
         />
 
 </LinearLayout>
