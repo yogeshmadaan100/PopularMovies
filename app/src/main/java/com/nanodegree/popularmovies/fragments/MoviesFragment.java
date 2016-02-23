@@ -85,8 +85,6 @@ public class MoviesFragment extends Fragment implements MovieAdapter.MovieClickI
         // Inflate the layout for this fragment
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movies, container, false);
         ButterKnife.bind(this, rootView);
-        final Activity activity = getActivity();
-        final MovieAdapter.MovieClickInterface movieClickInterface = this;
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
